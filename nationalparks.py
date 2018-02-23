@@ -34,13 +34,21 @@ class ParkScraper:
 
     def get_parks(self) -> dict:
         path = "/parks"
-        params = {"api_key": self.api_key}
-        parks_page1 = REST.get_json(self.BASE_URL_, path, params)
-        return parks_page1
+        parks_data = []
+        for page in range(0, 10):
+            print(".", end="", flush=True)
+            params = {"api_key": self.api_key, 
+                      "start": str(page * 100),
+                      "limit": "100"}
+            response = REST.get_json(self.BASE_URL_, path, params)
+            parks_data += response["data"]
+        print() # make a new line separate from all the dots
+        return parks_data
 
         
 if __name__ == "__main__":
     ps = ParkScraper()
-    response = ps.get_parks()
-    for park_data in response["data"]:
-        print(park_data["fullName"])
+    park_data = ps.get_parks()
+    for park in park_data:
+        if park["designation"] == "National Park":
+            print(park["designation"], " -- ", park["fullName"])
