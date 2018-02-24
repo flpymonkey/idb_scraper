@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 from requests import get
+from pickle import dump, load
 
 class REST:
     """
@@ -47,8 +48,22 @@ class ParkScraper:
 
         
 if __name__ == "__main__":
+    """
     ps = ParkScraper()
     park_data = ps.get_parks()
+    national_parks = {}
     for park in park_data:
         if park["designation"] == "National Park":
+            national_parks[park["fullName"]] = park
             print(park["designation"], " -- ", park["fullName"])
+    with open("./db.pckl", "wb") as outfile:
+        dump(national_parks, outfile)
+    """
+
+    national_parks = {}
+    with open("./db.pckl", "rb") as infile:
+        national_parks = load(infile)
+        print(national_parks.keys())
+    for park in national_parks.keys():
+        print(national_parks[park])
+    print("Done.")
