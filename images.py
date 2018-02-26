@@ -22,7 +22,7 @@ class REST:
         return result
 
 class ImageScraper:
-    """ 
+    """
     The ImageScraper class contains the functions and values for scraping
     image data.
     """
@@ -38,14 +38,40 @@ class ImageScraper:
 
     def get_photos(self) -> dict:
         path = ""
-        params = {"api_key": self.api_key, 
+        params = {"api_key": self.api_key,
                   "method": "flickr.photos.search",
                   "format": "json",
                   "text":   "yellowstone national park"}
         response = REST.get_json(self.BASE_URL_, path, params)
         return response
 
-        
+    def get_info(self, id: str) -> dict:
+        path = ""
+        params = {"api_key": self.api_key,
+        "method": "flickr.photos.getInfo",
+        "format": "json",
+        "photo_id":   id}
+        response = REST.get_json(self.BASE_URL_, path, params)
+        return response
+
+    def get_exif(self, id: str) -> dict:
+        path = ""
+        params = {"api_key": self.api_key,
+        "method": "flickr.photos.getExif",
+        "format": "json",
+        "photo_id":   id}
+        response = REST.get_json(self.BASE_URL_, path, params)
+        return response
+
+    def get_favorites(self, id: str) -> dict:
+        path = ""
+        params = {"api_key": self.api_key,
+        "method": "flickr.photos.getFavorites",
+        "format": "json",
+        "photo_id":   id}
+        response = REST.get_json(self.BASE_URL_, path, params)
+        return response
+
 if __name__ == "__main__":
     image_scraper = ImageScraper()
     photo_data = image_scraper.get_photos()
@@ -56,5 +82,9 @@ if __name__ == "__main__":
                 photo["id"],
                 photo["secret"])
         print(url)
-    print("Done.")
+        info = image_scraper.get_info(photo["id"])
+        exif = image_scraper.get_exif(photo["id"])
+        favorites = image_scraper.get_favorites(photo["id"])
+        print(favorites)
 
+    print("Done.")
