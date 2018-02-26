@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 import json
+import pprint
 import requests
 from pickle import dump, load
 
@@ -73,18 +74,32 @@ class ImageScraper:
         return response
 
 if __name__ == "__main__":
+    pp = pprint.PrettyPrinter(indent=2)
     image_scraper = ImageScraper()
     photo_data = image_scraper.get_photos()
     for photo in photo_data["photos"]["photo"]:
-        url = "https://c1.staticflickr.com/{}/{}/{}_{}_h.jpg".format(
-                photo["farm"],
-                photo["server"],
-                photo["id"],
-                photo["secret"])
-        print(url)
-        info = image_scraper.get_info(photo["id"])
-        exif = image_scraper.get_exif(photo["id"])
-        favorites = image_scraper.get_favorites(photo["id"])
-        print(favorites)
+        try:
+            url = "https://c1.staticflickr.com/{}/{}/{}_{}_h.jpg".format(
+                    photo["farm"],
+                    photo["server"],
+                    photo["id"],
+                    photo["secret"])
+            print("=" * 60)
+            print("direct url: {}".format(url))
+            info = image_scraper.get_info(photo["id"])
+            print("date taken: {}".format(info["photo"]["dates"]["taken"]))
+            print("url:        {}".format(info["photo"]["urls"]["url"][0]["_content"]))
+            print("author:     {}".format(info["photo"]["owner"]["realname"]))
+            print("title:      {}".format(info["photo"]["title"]["_content"]))
+            #pp.pprint(info)
+            exif = image_scraper.get_exif(photo["id"])
+            #print("EXIF")
+            #pprint(exif)
+            print("camera:     {}".format(exif["photo"]["camera"]))
+            #print("Model: {} \nMake: {}".format(1, 1))
+            favorites = image_scraper.get_favorites(photo["id"])
+            print("Favorites:  {}".format(favorites["photo"]["total"]))
+        except:
+            pass
 
     print("Done.")
