@@ -91,6 +91,7 @@ if __name__ == "__main__":
             print("url:        {}".format(info["photo"]["urls"]["url"][0]["_content"]))
             print("author:     {}".format(info["photo"]["owner"]["realname"]))
             print("title:      {}".format(info["photo"]["title"]["_content"]))
+            print("description:      {}".format(info["photo"]["description"]["_content"]))
             #pp.pprint(info)
             exif = image_scraper.get_exif(photo["id"])
             #print("EXIF")
