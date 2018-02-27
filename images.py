@@ -80,6 +80,7 @@ def get_park_photos(name):
     pp = pprint.PrettyPrinter(indent=2)
     image_scraper = ImageScraper()
     photo_data = image_scraper.get_photos(name)
+    users = set()
     for photo in photo_data["photos"]["photo"]:
         try:
             url = "https://c1.staticflickr.com/{}/{}/{}_{}_h.jpg".format(
@@ -87,7 +88,7 @@ def get_park_photos(name):
                     photo["server"],
                     photo["id"],
                     photo["secret"])
-            print("=" * 60)
+            #print("=" * 60)
             #print("direct url: {}".format(url))
             info = image_scraper.get_info(photo["id"])
             #print("date taken: {}".format(info["photo"]["dates"]["taken"]))
@@ -115,8 +116,10 @@ def get_park_photos(name):
             pickle_dict["camera:"] = exif["photo"]["camera"]
             pickle_dict["Favorites"] = favorites["photo"]["total"]
 
-            print ("pickling: " + str(pickle_dict))
-            all_park_photos.append(pickle_dict)
+            if (pickle_dict['author'] not in users):
+                users.add(pickle_dict['author'])
+                print ("pickling: " + str(pickle_dict))
+                all_park_photos.append(pickle_dict)
         except:
             pass
 
@@ -125,6 +128,7 @@ if __name__ == "__main__":
         national_parks = load(infile)
         print(national_parks.keys())
     for park in national_parks:
+        print (park)
         park_name = park
         get_park_photos(park_name)
         print("Done.")
