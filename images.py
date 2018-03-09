@@ -97,26 +97,30 @@ def get_park_photos(name):
             #print("title:      {}".format(info["photo"]["title"]["_content"]))
             #print("description:      {}".format(info["photo"]["description"]["_content"]))
             #pp.pprint(info)
-            exif = image_scraper.get_exif(photo["id"])
-            #print("EXIF")
-            #pprint(exif)
-            #print("camera:     {}".format(exif["photo"]["camera"]))
-            #print("Model: {} \nMake: {}".format(1, 1))
-            favorites = image_scraper.get_favorites(photo["id"])
-            #print("Favorites:  {}".format(favorites["photo"]["total"]))
-
-            pickle_dict = {}
-            pickle_dict["id"] = photo["id"]
-            pickle_dict["url"] = info["photo"]["urls"]["url"][0]["_content"]
-            pickle_dict["direct url"] = url
-            pickle_dict["date taken"] = info["photo"]["dates"]["taken"]
             pickle_dict["author"] = info["photo"]["owner"]["realname"]
-            pickle_dict["title"] = info["photo"]["title"]["_content"]
-            pickle_dict["description"] = info["photo"]["description"]["_content"]
-            pickle_dict["camera:"] = exif["photo"]["camera"]
-            pickle_dict["Favorites"] = favorites["photo"]["total"]
+            #also include the national park
+            pickle_dict['park'] = name
 
             if (pickle_dict['author'] not in users):
+
+                exif = image_scraper.get_exif(photo["id"])
+                #print("EXIF")
+                #pprint(exif)
+                #print("camera:     {}".format(exif["photo"]["camera"]))
+                #print("Model: {} \nMake: {}".format(1, 1))
+                favorites = image_scraper.get_favorites(photo["id"])
+                #print("Favorites:  {}".format(favorites["photo"]["total"]))
+
+                pickle_dict = {}
+                pickle_dict["id"] = photo["id"]
+                pickle_dict["url"] = info["photo"]["urls"]["url"][0]["_content"]
+                pickle_dict["direct url"] = url
+                pickle_dict["date taken"] = info["photo"]["dates"]["taken"]
+                pickle_dict["title"] = info["photo"]["title"]["_content"]
+                pickle_dict["description"] = info["photo"]["description"]["_content"]
+                pickle_dict["camera:"] = exif["photo"]["camera"]
+                pickle_dict["Favorites"] = favorites["photo"]["total"]
+
                 users.add(pickle_dict['author'])
                 print ("pickling: " + str(pickle_dict))
                 all_park_photos.append(pickle_dict)
