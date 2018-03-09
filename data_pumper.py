@@ -1,7 +1,15 @@
+#!/usr/local/bin/python3
+
 from sqlalchemy import create_engine
 from pickle import dump, load
 
-engine = create_engine('')
+engine_string = None
+with open("./dbinfo.txt", "r") as dbinfo:
+    engine_string = str(dbinfo.readline())
+
+if engine_string is None:
+    raise Exception("Could not load dbinfo.txt")
+engine = create_engine(engine_string)
 
 connection = engine.connect()
 
