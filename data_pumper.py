@@ -1,30 +1,40 @@
-from sqlalchemy import create_engine
+#!/usr/local/bin/python3
+from sqlalchemy import create_engine, MetaData
 from pickle import dump, load
 
-engine = create_engine('postgresql+psycopg2://bencj96:tonytime69@natphotodb.cnqkiqa2emjo.us-east-2.rds.amazonaws.com/natphotodb')
+engine_string = None
+with open("./dbinfo.txt", "r") as dbinfo:
+    engine_string = str(dbinfo.readline())
+
+if engine_string is None:
+    raise Exception("Could not load dbinfo.txt")
+engine = create_engine(engine_string)
 
 connection = engine.connect()
+
+metadata = MetaData()
+metadata.reflect(bind=engine)
+
+parks_table = metadata.tables['parks']
 
 national_parks = {}
 with open("./db.pckl", "rb") as infile:
     national_parks = load(infile)
-    # print(national_parks.keys())
 for park in national_parks.keys():
-    # print(national_parks[park])
     national_park = national_parks[park]
-    print (national_park.keys())
-    q = "INSERT INTO parks VALUES('{}','{}','{}','{}','{}','{}','{}','{}')".format(national_park['fullName'],
-                        national_park['states'],
-                        national_park['latLong'],
-                        national_park['description'],
-                        national_park['directionsInfo'],
-                        national_park['url'],
-                        national_park['weatherInfo'],
-                        national_park['directionsUrl'])
-    result = connection.execute(q)
-#
-# print("Done.")
-#
-#
-# for row in result:
-#     print(row['name'])
+    try:
+        ins = parks_table.insert().values(name=national_park['fullName'],
+                                    states=national_park['states'],
+                                    latlong=national_park['latLong'],
+                                    description=national_park['description'],
+                                    directions=national_park['directionsInfo'],
+                                    url=national_park['url'],
+                                    weather=national_park['weatherInfo'],
+                                    directionsUrl=national_park['directionsUrl'])
+
+        result = connection.execute(ins)
+        print(result)
+    except Exception as e:
+        pass
+
+print("Done.")
