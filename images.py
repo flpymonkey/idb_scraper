@@ -97,21 +97,21 @@ def get_park_photos(name):
             #print("title:      {}".format(info["photo"]["title"]["_content"]))
             #print("description:      {}".format(info["photo"]["description"]["_content"]))
             #pp.pprint(info)
+
+            pickle_dict = {}
+
             pickle_dict["author"] = info["photo"]["owner"]["realname"]
             #also include the national park
             pickle_dict['park'] = name
 
             if (pickle_dict['author'] not in users):
-
                 exif = image_scraper.get_exif(photo["id"])
                 #print("EXIF")
                 #pprint(exif)
                 #print("camera:     {}".format(exif["photo"]["camera"]))
                 #print("Model: {} \nMake: {}".format(1, 1))
                 favorites = image_scraper.get_favorites(photo["id"])
-                #print("Favorites:  {}".format(favorites["photo"]["total"]))
 
-                pickle_dict = {}
                 pickle_dict["id"] = photo["id"]
                 pickle_dict["url"] = info["photo"]["urls"]["url"][0]["_content"]
                 pickle_dict["direct url"] = url
