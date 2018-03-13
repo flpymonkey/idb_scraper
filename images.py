@@ -143,3 +143,4 @@ if __name__ == "__main__":
     with open("./dbpics.pckl", "wb") as outfile:
         dump(all_park_photos, outfile)
     print ("Dumped!")
+    print(failed)
