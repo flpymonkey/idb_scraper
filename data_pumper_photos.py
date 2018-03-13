@@ -21,21 +21,22 @@ photos = {}
 with open("./dbpics.pckl", "rb") as infile:
     photos = load(infile)
 for k in photos:
-    print(k)
-    # photo = photos[k]
-    # try:
-    #     ins = photos_table.insert().values(name=photo['fullName'],
-    #                                 states=photo['states'],
-    #                                 latlong=photo['latLong'],
-    #                                 description=photo['description'],
-    #                                 directions=photo['directionsInfo'],
-    #                                 url=photo['url'],
-    #                                 weather=photo['weatherInfo'],
-    #                                 directionsUrl=photo['directionsUrl'])
-    #
-    #     result = connection.execute(ins)
-    #     print(result)
-    # except Exception as e:
-    #     pass
+    #print(k)
+    photo = k
+    try:
+        ins = photos_table.insert().values(name=photo['fullName'],
+                                    states=photo['states'],
+                                    latlong=photo['latLong'],
+                                    description=photo['description'],
+                                    directions=photo['directionsInfo'],
+                                    url=photo['url'],
+                                    weather=photo['weatherInfo'],
+                                    directionsUrl=photo['directionsUrl'],
+                                    park=photo['park'])
+
+        result = connection.execute(ins)
+        print(result)
+    except Exception as e:
+        pass
 
 print("Done.")
