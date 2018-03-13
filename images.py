@@ -128,14 +128,18 @@ def get_park_photos(name):
             pass
 
 if __name__ == "__main__":
+    failed = []
     with open("./db.pckl", "rb") as infile:
         national_parks = load(infile)
         print(national_parks.keys())
     for park in national_parks:
         print (park)
         park_name = park
-        get_park_photos(park_name)
-        print("Done.")
+        try:
+            get_park_photos(park_name)
+            print("Done.")
+        except:
+            failed.append(park_name)
     with open("./dbpics.pckl", "wb") as outfile:
         dump(all_park_photos, outfile)
     print ("Dumped!")
