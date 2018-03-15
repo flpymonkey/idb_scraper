@@ -50,6 +50,21 @@ class BestBuyScraper:
             response = REST.get_json(self.BASE_URL_, path, search, params)
             return response
 
+    def get_phones(self, text) -> dict:
+            path = "/products"
+            params = {"apiKey": self.api_key,
+                      "format": "json",
+                      "show": "regularPrice,details.value"}
+            splittext = (text).split()
+            search = "((search=" + splittext[0]
+            i = iter(splittext)
+            b = next(i)
+            for e in i:
+                search += "&search=" + e
+            search += ")&(categoryPath.id=pcmcat209400050001))"
+            response = REST.get_json(self.BASE_URL_, path, search, params)
+            return response
+
 if __name__ == "__main__":
     failed = []
     # scraper = BestBuyScraper()
@@ -77,8 +92,15 @@ if __name__ == "__main__":
                         results.append(formatted_data)
                         print('Added!: '+ e['camera:'])
                     except:
-                        print("failed" + e['camera:'])
-                        failed.append(e['camera:'])
+                        try: #try for phones
+                            raw_data = scraper.get_phones(e['camera:'])
+                            price = raw_data['products'][0]['regularPrice']
+                            formatted_data = {'name': e["camera:"], 'price': price, 'details': raw_data['products'][0]['details']}
+                            results.append(formatted_data)
+                            print('Added!: '+ e['camera:'])
+                        except:
+                            print("failed" + e['camera:'])
+                            failed.append(e['camera:'])
         print("Done!")
         with open("./dbcams.pckl", "wb") as outfile:
             dump(results, outfile)
