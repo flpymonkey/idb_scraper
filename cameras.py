@@ -16,9 +16,7 @@ class REST:
         request_path - the path to the data we are requesting
         """
         url = base + request_path + search # search ex: "((search=Canon&search=Eos&search=80D)&categoryPath.id!=ab&(categoryPath.id=abcat0401000))"
-        print(url)
         response = requests.get(url, params=params)
-        print(response)
         result = json.loads(response.text)
         return result
 
@@ -36,14 +34,13 @@ class BestBuyScraper:
         with open(path) as keyfile:
             key = str(keyfile.readline()).strip()
             self.api_key = key
-            print(key)
 
     def get_camera(self, text) -> dict:
             path = "/products"
             params = {"apiKey": self.api_key,
                       "format": "json",
-                      "show": "details.value"}
-            splittext = text.split()
+                      "show": "regularPrice,details.value"}
+            splittext = (text + " " + " Body Only").split()
             search = "((search=" + splittext[0]
             i = iter(splittext)
             b = next(i)
@@ -62,15 +59,23 @@ if __name__ == "__main__":
         pics = load(infile)
         results = []
         scraper = BestBuyScraper()
+        cams = set()
         for e in pics:
-            try:
-                results.append(scraper.get_camera(e['camera:']))
-            except:
-                print("failed" + e['camera:'])
-                failed.append(e['camera:'])
+            if e['camera:'] not in cams:
+                cams.add( e['camera:'])
+                try:
+                    raw_data = scraper.get_camera(e['camera:'])
+                    price = raw_data['products'][0]['regularPrice']
+                    formatted_data = {'name': e["camera:"], 'price': price, 'details': raw_data['products'][0]['details']}
+                    results.append(formatted_data)
+                    print('Added!: '+ e['camera:'])
+                except:
+                    print("failed" + e['camera:'])
+                    failed.append(e['camera:'])
         print("Done!")
         with open("./dbcams.pckl", "wb") as outfile:
             dump(results, outfile)
+        print (cams)
         print("Failed:")
         print(failed)
 
