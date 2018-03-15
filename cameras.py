@@ -40,7 +40,7 @@ class BestBuyScraper:
             params = {"apiKey": self.api_key,
                       "format": "json",
                       "show": "regularPrice,details.value"}
-            splittext = (text + " " + " Body Only").split()
+            splittext = (text).split()
             search = "((search=" + splittext[0]
             i = iter(splittext)
             b = next(i)
@@ -64,18 +64,26 @@ if __name__ == "__main__":
             if e['camera:'] not in cams:
                 cams.add( e['camera:'])
                 try:
-                    raw_data = scraper.get_camera(e['camera:'])
+                    raw_data = scraper.get_camera(e['camera:'] + " " + " Body Only")
                     price = raw_data['products'][0]['regularPrice']
                     formatted_data = {'name': e["camera:"], 'price': price, 'details': raw_data['products'][0]['details']}
                     results.append(formatted_data)
                     print('Added!: '+ e['camera:'])
                 except:
-                    print("failed" + e['camera:'])
-                    failed.append(e['camera:'])
+                    try:
+                        raw_data = scraper.get_camera(e['camera:'])
+                        price = raw_data['products'][0]['regularPrice']
+                        formatted_data = {'name': e["camera:"], 'price': price, 'details': raw_data['products'][0]['details']}
+                        results.append(formatted_data)
+                        print('Added!: '+ e['camera:'])
+                    except:
+                        print("failed" + e['camera:'])
+                        failed.append(e['camera:'])
         print("Done!")
         with open("./dbcams.pckl", "wb") as outfile:
             dump(results, outfile)
         print (cams)
+        print(len(results))
         print("Failed:")
         print(failed)
 
