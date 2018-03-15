@@ -10,12 +10,13 @@ class REST:
     This class contains some useful functions for using the requests library.
     As of right now, it's just a container for the get_json function.
     """
-    def get_json(base: str, request_path: str, params: dict={}, search: str) -> list:
+    def get_json(base: str, request_path: str, search: str, params: dict={}) -> list:
         """
         Return the JSON result for the given request path
         request_path - the path to the data we are requesting
         """
         url = base + request_path + search # search ex: "((search=Canon&search=Eos&search=80D)&categoryPath.id!=ab&(categoryPath.id=abcat0401000))"
+        print(url)
         response = requests.get(url, params=params)
         print(response)
         result = json.loads(response.text)
@@ -41,18 +42,47 @@ class BestBuyScraper:
             path = "/products"
             params = {"apiKey": self.api_key,
                       "format": "json",
-                      "show": "details.name"}
+                      "show": "details.value"}
             splittext = text.split()
             search = "((search=" + splittext[0]
             i = iter(splittext)
-            # next(i) FIXME
-            # for e in i:
-            #     search += "&search\=" + e
-            #search += ")&(categoryPath.id=abcat0401000))"
-            #/products((search=Canon&search=EOS&search=80D)&(categoryPath.id=abcat0401000))?apiKey=&show=details.name&format=json
-            response = REST.get_json(self.BASE_URL_, path, params, search)
+            b = next(i)
+            for e in i:
+                search += "&search=" + e
+            search += ")&(categoryPath.id=abcat0401000))"
+            response = REST.get_json(self.BASE_URL_, path, search, params)
             return response
-# /v1/products?apiKey=mjEyiiINwXK3fFgNaAyd8x8c&format=json&show=details.value&categoryPath.id=abcat0401000&search=CanonEOS80D
-scraper = BestBuyScraper()
-result = scraper.get_camera("Canon")
-print(result)
+
+if __name__ == "__main__":
+    failed = []
+    # scraper = BestBuyScraper()
+    # result = scraper.get_camera("Canon EOS 80D")
+    # print(result)
+    with open("./dbpics.pckl", "rb") as infile:
+        pics = load(infile)
+        results = []
+        scraper = BestBuyScraper()
+        for e in pics:
+            try:
+                results.append(scraper.get_camera(e['camera:']))
+            except:
+                print("failed" + e['camera:'])
+                failed.append(e['camera:'])
+        print("Done!")
+        with open("./dbcams.pckl", "wb") as outfile:
+            dump(results, outfile)
+        print("Failed:")
+        print(failed)
+
+    # for park in national_parks:
+    #     print (park)
+    #     park_name = park
+    #     try:
+    #         get_park_photos(park_name)
+    #         print("Done.")
+    #     except:
+    #         failed.append(park_name)
+    # with open("./dbpics.pckl", "wb") as outfile:
+    #     dump(all_park_photos, outfile)
+    # print ("Dumped!")
+    # print(failed)
