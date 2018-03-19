@@ -24,6 +24,19 @@ with open("./dbcams.pckl", "rb") as infile:
     cams = load(infile)
 for k in cams:
     #print(k)
+    name = k['name']
+    price = k['price']
+    weight = None #'Product Weight'
+    type = None #Digital Camera Typer
+    water = None #Water Resistant
+    megapix = None #'Total Megapixels'
+    efmegapix = None #Effective Megapixels
+    iso = None #ISO Settings
+    shutter = None #Shutter Speeds
+    videores = None #Video Resolution
+    imgres = None #Image Resolution
+    sensor = None #Image Sensor Type
+
     pp.pprint(k)
 
 print("Done.")
