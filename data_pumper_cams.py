@@ -45,8 +45,9 @@ for k in cams:
             shutter_speeds=get_detail(k, "Shutter Speeds"),
             video_resolution=get_detail(k, "Video Resolution"),
             image_resolution=get_detail(k, "Image Resolution (Display)"),
-            sensor=get_detail(k, "Image Sensor Type"))
-            
+            sensor=get_detail(k, "Image Sensor Type"),
+            image_url = k['photo'])
+
     try:
         result = connection.execute(ins)
         print(result)

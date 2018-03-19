@@ -35,6 +35,36 @@ class BestBuyScraper:
             key = str(keyfile.readline()).strip()
             self.api_key = key
 
+    def get_camera_image(self, text) -> dict:
+            path = "/products"
+            params = {"apiKey": self.api_key,
+                      "format": "json",
+                      "show": "image"}
+            splittext = (text).split()
+            search = "((search=" + splittext[0]
+            i = iter(splittext)
+            b = next(i)
+            for e in i:
+                search += "&search=" + e
+            search += ")&(categoryPath.id=abcat0401000))"
+            response = REST.get_json(self.BASE_URL_, path, search, params)
+            return response
+
+    def get_phones_image(self, text) -> dict:
+            path = "/products"
+            params = {"apiKey": self.api_key,
+                      "format": "json",
+                      "show": "image"}
+            splittext = (text).split()
+            search = "((search=" + splittext[0]
+            i = iter(splittext)
+            b = next(i)
+            for e in i:
+                search += "&search=" + e
+            search += ")&(categoryPath.id=pcmcat209400050001))"
+            response = REST.get_json(self.BASE_URL_, path, search, params)
+            return response
+
     def get_camera(self, text) -> dict:
             path = "/products"
             params = {"apiKey": self.api_key,
@@ -81,21 +111,21 @@ if __name__ == "__main__":
                 try:
                     raw_data = scraper.get_camera(e['camera:'] + " " + " Body Only")
                     price = raw_data['products'][0]['regularPrice']
-                    formatted_data = {'name': e["camera:"], 'price': price, 'details': raw_data['products'][0]['details']}
+                    formatted_data = {'name': e["camera:"], 'price': price, 'photo': scraper.get_camera_image(e['camera:'])['products'][0]['image'], 'details': raw_data['products'][0]['details']}
                     results.append(formatted_data)
                     print('Added!: '+ e['camera:'])
                 except:
                     try:
                         raw_data = scraper.get_camera(e['camera:'])
                         price = raw_data['products'][0]['regularPrice']
-                        formatted_data = {'name': e["camera:"], 'price': price, 'details': raw_data['products'][0]['details']}
+                        formatted_data = {'name': e["camera:"], 'price': price, 'photo': scraper.get_camera_image(e['camera:'])['products'][0]['image'], 'details': raw_data['products'][0]['details']}
                         results.append(formatted_data)
                         print('Added!: '+ e['camera:'])
                     except:
                         try: #try for phones
                             raw_data = scraper.get_phones(e['camera:'])
                             price = raw_data['products'][0]['regularPrice']
-                            formatted_data = {'name': e["camera:"], 'price': price, 'details': raw_data['products'][0]['details']}
+                            formatted_data = {'name': e["camera:"], 'price': price, 'photo': scraper.get_phones_image(e['camera:'])['products'][0]['image'], 'details': raw_data['products'][0]['details']}
                             results.append(formatted_data)
                             print('Added!: '+ e['camera:'])
                         except:

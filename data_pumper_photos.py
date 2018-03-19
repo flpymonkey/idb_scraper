@@ -16,14 +16,14 @@ connection = engine.connect()
 metadata = MetaData()
 metadata.reflect(bind=engine)
 
-#photos_table = metadata.tables['photos']
+photos_table = metadata.tables['photos']
 
 pp = pprint.PrettyPrinter(indent=2)
 photos = {}
 with open("./dbpics.pckl", "rb") as infile:
     photos = load(infile)
 for photo in photos:
-    pp.pprint(photo)
+    # pp.pprint(photo)
     ins = photos_table.insert().values(photographer=photo['author'],
                                     title=photo['title'],
                                     date=photo['date taken'],
@@ -31,11 +31,11 @@ for photo in photos:
                                     image_url=photo['url'],
                                     flickr_url=photo['direct url'],
                                     likes=photo['Favorites'],
-                                    park=photo['park'])
+                                    park=photo['park'],
+                                    camera=photo['camera:'])
 
     try:
-        pass
-        #result = connection.execute(ins)
+        result = connection.execute(ins)
         #print(result)
     except Exception as e:
         print("Insertion error:", e)
