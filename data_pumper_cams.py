@@ -3,6 +3,15 @@ from sqlalchemy import create_engine, MetaData
 from pickle import dump, load
 import pprint
 
+def get_detail(details, detail_name):
+    """
+    Return the value for the given detail_name in a camera's details
+    """
+    for detail_dict in details["details"]:
+        if detail_dict["name"] == detail_name:
+            return detail_dict["value"]
+    raise Exception("ERROR: Could not find detail \"" + detail_name + "\"!")
+
 engine_string = None
 with open("./dbinfo.txt", "r") as dbinfo:
     engine_string = str(dbinfo.readline())
@@ -16,27 +25,31 @@ connection = engine.connect()
 metadata = MetaData()
 metadata.reflect(bind=engine)
 
-#photos_table = metadata.tables['photos']
+cameras_table = metadata.tables['cameras']
 
 pp = pprint.PrettyPrinter(indent=2)
 photos = {}
 with open("./dbcams.pckl", "rb") as infile:
     cams = load(infile)
 for k in cams:
-    #print(k)
-    name = k['name']
-    price = k['price']
-    weight = None #'Product Weight'
-    type = None #Digital Camera Typer
-    water = None #Water Resistant
-    megapix = None #'Total Megapixels'
-    efmegapix = None #Effective Megapixels
-    iso = None #ISO Settings
-    shutter = None #Shutter Speeds
-    videores = None #Video Resolution
-    imgres = None #Image Resolution
-    sensor = None #Image Sensor Type
-
-    pp.pprint(k)
+    ins = parks_table.insert().values(
+            name=k['name'],
+            price=k['price'],
+            weight=get_detail(k, "Product Weight"),
+            type=get_detail(k, "Digital Camera Type"),
+            water=get_detail(k, "Water Resistant"),
+            megapix=get_detail(k, "Total Megapixels"),
+            efmegapix=get_detail(k, "Effective Megapixels"),
+            iso=get_detail(k, "ISO Settings"),
+            shutter=get_detail(k, "Shutter Speeds"),
+            videores=get_detail(k, "Video Resolution"),
+            imgres=get_detail(k, "Image Resolution (Display)"),
+            sensor= get_detail(k, "Image Sensor Type"))
+            
+    try:
+        result = connection.execute(ins)
+        print(result)
+    except Exception as e:
+        print("Insertion error:", e)
 
 print("Done.")
