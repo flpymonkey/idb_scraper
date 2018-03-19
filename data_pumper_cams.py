@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 from sqlalchemy import create_engine, MetaData
 from pickle import dump, load
+import pprint
 
 engine_string = None
 with open("./dbinfo.txt", "r") as dbinfo:
@@ -17,11 +18,12 @@ metadata.reflect(bind=engine)
 
 #photos_table = metadata.tables['photos']
 
+pp = pprint.PrettyPrinter(indent=2)
 photos = {}
 with open("./dbcams.pckl", "rb") as infile:
     cams = load(infile)
 for k in cams:
     #print(k)
-    print(k)
+    pp.pprint(k)
 
 print("Done.")
