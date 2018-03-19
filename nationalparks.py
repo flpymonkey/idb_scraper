@@ -2,6 +2,7 @@
 
 from requests import get
 from pickle import dump, load
+import pprint
 
 class REST:
     """
@@ -40,7 +41,8 @@ class ParkScraper:
             print(".", end="", flush=True)
             params = {"api_key": self.api_key, 
                       "start": str(page * 100),
-                      "limit": "100"}
+                      "limit": "100",
+                      "fields": "images"}
             response = REST.get_json(self.BASE_URL_, path, params)
             parks_data += response["data"]
         print() # make a new line separate from all the dots
@@ -48,6 +50,7 @@ class ParkScraper:
 
         
 if __name__ == "__main__":
+    pp = pprint.PrettyPrinter(indent=2)
     """
     ps = ParkScraper()
     park_data = ps.get_parks()
@@ -56,14 +59,17 @@ if __name__ == "__main__":
         if park["designation"] == "National Park":
             national_parks[park["fullName"]] = park
             print(park["designation"], " -- ", park["fullName"])
+            pp.pprint(park)
     with open("./db.pckl", "wb") as outfile:
         dump(national_parks, outfile)
-    """
 
+    """
     national_parks = {}
     with open("./db.pckl", "rb") as infile:
         national_parks = load(infile)
         print(national_parks.keys())
     for park in national_parks.keys():
-        print(national_parks[park])
+        pp.pprint(national_parks[park])
+    #"""
+
     print("Done.")
