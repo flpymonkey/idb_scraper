@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 from sqlalchemy import create_engine, MetaData
 from pickle import dump, load
+import pprint
 
 engine_string = None
 with open("./dbinfo.txt", "r") as dbinfo:
@@ -17,26 +18,26 @@ metadata.reflect(bind=engine)
 
 #photos_table = metadata.tables['photos']
 
+pp = pprint.PrettyPrinter(indent=2)
 photos = {}
 with open("./dbpics.pckl", "rb") as infile:
     photos = load(infile)
-for k in photos:
-    #print(k)
-    photo = k
-    try:
-        ins = photos_table.insert().values(name=photo['fullName'],
-                                    states=photo['states'],
-                                    latlong=photo['latLong'],
+for photo in photos:
+    pp.pprint(photo)
+    ins = photos_table.insert().values(photographer=photo['author'],
+                                    title=photo['title'],
+                                    date=photo['date taken'],
                                     description=photo['description'],
-                                    directions=photo['directionsInfo'],
-                                    url=photo['url'],
-                                    weather=photo['weatherInfo'],
-                                    directionsUrl=photo['directionsUrl'],
+                                    image_url=photo['url'],
+                                    flickr_url=photo['direct url'],
+                                    likes=photo['Favorites'],
                                     park=photo['park'])
 
-        result = connection.execute(ins)
-        print(result)
-    except Exception as e:
+    try:
         pass
+        #result = connection.execute(ins)
+        #print(result)
+    except Exception as e:
+        print("Insertion error:", e)
 
 print("Done.")

@@ -10,7 +10,8 @@ def get_detail(details, detail_name):
     for detail_dict in details["details"]:
         if detail_dict["name"] == detail_name:
             return detail_dict["value"]
-    raise Exception("ERROR: Could not find detail \"" + detail_name + "\"!")
+    return None
+    #raise Exception("ERROR: Could not find detail \"" + detail_name + "\" for " + details["name"] + "!")
 
 engine_string = None
 with open("./dbinfo.txt", "r") as dbinfo:
@@ -28,23 +29,23 @@ metadata.reflect(bind=engine)
 cameras_table = metadata.tables['cameras']
 
 pp = pprint.PrettyPrinter(indent=2)
-photos = {}
+cams = {}
 with open("./dbcams.pckl", "rb") as infile:
     cams = load(infile)
 for k in cams:
-    ins = parks_table.insert().values(
+    ins = cameras_table.insert().values(
             name=k['name'],
             price=k['price'],
             weight=get_detail(k, "Product Weight"),
             type=get_detail(k, "Digital Camera Type"),
-            water=get_detail(k, "Water Resistant"),
-            megapix=get_detail(k, "Total Megapixels"),
-            efmegapix=get_detail(k, "Effective Megapixels"),
+            water_resistant=get_detail(k, "Water Resistant"),
+            total_megapixels=get_detail(k, "Total Megapixels"),
+            effective_megapixels=get_detail(k, "Effective Megapixels"),
             iso=get_detail(k, "ISO Settings"),
-            shutter=get_detail(k, "Shutter Speeds"),
-            videores=get_detail(k, "Video Resolution"),
-            imgres=get_detail(k, "Image Resolution (Display)"),
-            sensor= get_detail(k, "Image Sensor Type"))
+            shutter_speeds=get_detail(k, "Shutter Speeds"),
+            video_resolution=get_detail(k, "Video Resolution"),
+            image_resolution=get_detail(k, "Image Resolution (Display)"),
+            sensor=get_detail(k, "Image Sensor Type"))
             
     try:
         result = connection.execute(ins)
