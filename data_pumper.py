@@ -23,14 +23,16 @@ with open("./db.pckl", "rb") as infile:
 for park in national_parks.keys():
     national_park = national_parks[park]
     try:
-        ins = parks_table.insert().values(name=national_park['fullName'],
-                                    states=national_park['states'],
-                                    latlong=national_park['latLong'],
-                                    description=national_park['description'],
-                                    directions=national_park['directionsInfo'],
-                                    url=national_park['url'],
-                                    weather=national_park['weatherInfo'],
-                                    directionsUrl=national_park['directionsUrl'])
+        ins = parks_table.insert().values(
+                name=national_park['fullName'],
+                states=national_park['states'],
+                latlong=national_park['latLong'],
+                description=national_park['description'],
+                directions=national_park['directionsInfo'],
+                url=national_park['url'],
+                weather=national_park['weatherInfo'],
+                directions_url=national_park['directionsUrl'],
+                image_url=national_park['images'][0]['url'])
 
         result = connection.execute(ins)
         print(result)
